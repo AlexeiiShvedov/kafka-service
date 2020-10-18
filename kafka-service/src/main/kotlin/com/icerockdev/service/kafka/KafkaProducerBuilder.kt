@@ -9,7 +9,7 @@ import org.apache.kafka.clients.producer.Partitioner
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner
 import org.apache.kafka.common.serialization.Serializer
-import java.util.*
+import java.util.Properties
 import kotlin.reflect.KClass
 
 class KafkaProducerBuilder {

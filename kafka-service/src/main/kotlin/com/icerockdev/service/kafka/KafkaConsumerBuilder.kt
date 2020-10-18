@@ -7,7 +7,7 @@ package com.icerockdev.service.kafka
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.Deserializer
-import java.util.*
+import java.util.Properties
 
 class KafkaConsumerBuilder {
     enum class Offset(val value: String) {

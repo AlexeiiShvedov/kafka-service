@@ -5,7 +5,13 @@
 package com.icerockdev.sample
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.icerockdev.service.kafka.*
+import com.icerockdev.service.kafka.IKafkaConsumer
+import com.icerockdev.service.kafka.KafkaConsumerBuilder
+import com.icerockdev.service.kafka.KafkaConsumerExecutionPool
+import com.icerockdev.service.kafka.KafkaProducerBuilder
+import com.icerockdev.service.kafka.KafkaSender
+import com.icerockdev.service.kafka.ObjectDeserializer
+import com.icerockdev.service.kafka.ObjectSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,7 +20,7 @@ import org.apache.kafka.common.serialization.LongSerializer
 import org.apache.kafka.common.serialization.StringDeserializer
 import java.net.InetAddress
 import java.time.Duration
-import java.util.*
+import java.util.Collections
 
 object Main {
     @JvmStatic
