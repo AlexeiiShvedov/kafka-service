@@ -26,4 +26,8 @@
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDERR"/>
     </root>
+    <logger name="com.icerockdev" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDERR"/>
+    </logger>
 </configuration>

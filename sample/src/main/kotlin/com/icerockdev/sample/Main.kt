@@ -6,7 +6,9 @@ package com.icerockdev.sample
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.icerockdev.service.kafka.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.LongSerializer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -29,7 +31,7 @@ object Main {
 
         val service = TestProducerService(servers, clientId, topic)
         val consumer = TestKafkaConsumer(servers, groupId, clientId)
-        val executor = KafkaConsumerExecutionPool(Dispatchers.IO)
+        val executor = KafkaConsumerExecutionPool(CoroutineScope(Dispatchers.IO + SupervisorJob()))
         consumer.run(executor, topic)
 
         for (i in 1..9) {
