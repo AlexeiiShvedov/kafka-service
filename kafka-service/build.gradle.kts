@@ -22,11 +22,11 @@ val sourcesJar by tasks.registering(Jar::class) {
 
 dependencies {
     // kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${properties["kotlin_version"]}")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${properties["kotlin_version"]}")
     // logging
     implementation ("ch.qos.logback:logback-classic:${properties["logback_version"]}")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${properties["coroutines_version"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${properties["coroutines_version"]}")
 
     // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
     api(group = "org.apache.kafka", name = "kafka-clients", version = properties["kafka_api"].toString())
@@ -39,7 +39,9 @@ dependencies {
     api(group = "com.fasterxml.jackson.core", name = "jackson-core", version = properties["jackson_version"].toString())
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-kotlin
     api(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = properties["jackson_version"].toString())
-    implementation("joda-time:joda-time:${properties["jodatime_version"]}")
+
+    // Tests
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${properties["kotlin_version"]}")
 }
 
 java {

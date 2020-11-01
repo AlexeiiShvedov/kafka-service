@@ -29,7 +29,7 @@ application {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${properties["kotlin_version"]}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${properties["coroutines_version"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${properties["coroutines_version"]}")
 
 //    implementation("com.icerockdev.service:kafka-service:0.1.0")
     implementation(project(":kafka-service"))

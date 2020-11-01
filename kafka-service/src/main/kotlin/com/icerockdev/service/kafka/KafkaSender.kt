@@ -42,9 +42,9 @@ object KafkaSender {
         }
     }
 
-    fun <K : Any, V : Any> sendAsync(producer: Producer<K, V>, topic: String, key: K, data: V) {
+    fun <K : Any, V : Any> sendAsync(producer: Producer<K, V>, topic: String, key: K, value: V) {
         val time = System.currentTimeMillis()
-        val record: ProducerRecord<K, V> = ProducerRecord(topic, key, data)
+        val record: ProducerRecord<K, V> = ProducerRecord(topic, key, value)
 
         producer.send(record) { metadata, exception ->
             val elapsedTime = System.currentTimeMillis() - time
@@ -59,7 +59,7 @@ object KafkaSender {
             } else {
                 if (exception is InvalidPidMappingException) {
                     // retry after transaction expire (for transactions)
-                    return@send sendAsync(producer, topic, key, data)
+                    return@send sendAsync(producer, topic, key, value)
                 }
                 logger.error(exception.localizedMessage, exception)
             }

@@ -24,10 +24,14 @@ class KafkaConsumerBuilder {
 
     fun applyReadOpt(
         maxPollRecords: Int = 50,
-        resetOffset: Offset = Offset.LATEST
+        resetOffset: Offset = Offset.LATEST,
+        enableAutocommit: Boolean = false,
+        autocommitIntervalMs: Int = 5000
     ): KafkaConsumerBuilder {
         props[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = maxPollRecords
         props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = resetOffset.value
+        props[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = enableAutocommit
+        props[ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG] = autocommitIntervalMs
         return this
     }
 

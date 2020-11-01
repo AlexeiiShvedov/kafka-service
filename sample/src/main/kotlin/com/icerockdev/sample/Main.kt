@@ -33,8 +33,6 @@ object Main {
         val groupId = "group"
         val topic = "topic"
 
-        println(clientId)
-
         val service = TestProducerService(servers, clientId, topic)
         val consumer = TestKafkaConsumer(servers, groupId, clientId)
         val executor = KafkaConsumerExecutionPool(CoroutineScope(Dispatchers.IO + SupervisorJob()))
@@ -47,10 +45,11 @@ object Main {
             service.sendData("Sanded value: $i")
         }
 
+        service.close()
+
         Thread.sleep(1000)
 
         println("Shutdown started")
-        service.close()
         executor.close()
         consumer.close()
     }
@@ -112,10 +111,7 @@ class TestKafkaConsumer(servers: String, groupId: String, clientId: String) : IK
             topicList = Collections.singletonList(topic),
             pollWait = Duration.ofMillis(100)
         ) {
-            this.forEach { record ->
-                // apply values
-                println("Read value: ${record.value()}")
-            }
+            println("Read value: ${value()}")
             true
         }
 
