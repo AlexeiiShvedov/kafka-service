@@ -29,6 +29,7 @@ class KafkaTest {
 
     // specify unique client id by hostname and app name
     private val clientId = "app-name::${hostname}"
+    private val anotherClientId = "app-name::${hostname}::other"
 
     private val servers = "localhost:9092"
     private val groupId = "group"
@@ -68,23 +69,56 @@ class KafkaTest {
                                 ObjectDeserializer(jacksonTypeRef())
                         )
 
+
+
+        // init consumer with another group
+        anotherConsumer =
+            KafkaConsumerBuilder()
+                .applyReadOpt()
+                .applyIsolation(KafkaConsumerBuilder.IsolationLevel.READ_COMMITTED)
+                .apply {
+                    with(props) {
+                        this[ConsumerConfig.FETCH_MAX_BYTES_CONFIG] = 50 * 1024 * 1024
+                        this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerBuilder.Offset.LATEST.value
+                    }
+                }
+                .build<Long, String>(
+                    servers,
+                    anotherGroupId,
+                    anotherClientId,
+                    LongDeserializer(),
+                    ObjectDeserializer(jacksonTypeRef())
+                )
+
+
         // Read any old messages (actual for crushed test)
         consumer.subscribe(listOf(topic))
         val cnt = consumer.poll(pollTimeout)
         println("Init consumer read: $cnt")
         consumer.commitSync()
         consumer.unsubscribe()
+
+        anotherConsumer.subscribe(listOf(topic))
+        anotherConsumer.poll(pollTimeout)
+        anotherConsumer.commitSync()
+        anotherConsumer.unsubscribe()
     }
 
     @Test
     fun testBasic() {
         consumer.subscribe(listOf(topic))
+        anotherConsumer.subscribe(listOf(topic))
+
         KafkaSender.send(producer = producer, topic = topic, key = System.currentTimeMillis(), value = "Sync sent value 1")
 
         val records = consumer.poll(pollTimeout)
         assertEquals(1, records.count())
 
         KafkaSender.send(producer = producer, topic = topic, key = System.currentTimeMillis(), value = "Sync sent value 2")
+
+        val anotherRecords = anotherConsumer.poll(pollTimeout)
+        assertEquals(2, anotherRecords.count())
+        anotherConsumer.commitSync()
 
         // rewind uncommitted reading
         records.forEach {
@@ -130,10 +164,12 @@ class KafkaTest {
         producer.flush()
         producer.close()
         consumer.close()
+        anotherConsumer.close()
     }
 
     companion object {
         private lateinit var producer: KafkaProducer<Long, String>
         private lateinit var consumer: KafkaConsumer<Long, String>
+        private lateinit var anotherConsumer: KafkaConsumer<Long, String>
     }
 }
