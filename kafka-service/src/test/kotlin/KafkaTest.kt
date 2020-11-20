@@ -3,7 +3,7 @@
  */
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.icerockdev.service.kafka.KafkaConsumerBuilder
+import com.icerockdev.service.kafka.consumer.KafkaConsumerConfig
 import com.icerockdev.service.kafka.KafkaConsumerExecutionPool
 import com.icerockdev.service.kafka.KafkaProducerBuilder
 import com.icerockdev.service.kafka.KafkaSender
@@ -12,7 +12,6 @@ import com.icerockdev.service.kafka.ObjectSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.TopicPartition
@@ -52,16 +51,16 @@ class KafkaTest {
                 )
 
         consumer =
-                KafkaConsumerBuilder()
+                KafkaConsumerConfig()
                         .applyReadOpt()
-                        .applyIsolation(KafkaConsumerBuilder.IsolationLevel.READ_COMMITTED)
+                        .applyIsolation(KafkaConsumerConfig.IsolationLevel.READ_COMMITTED)
                         .apply {
                             with(props) {
                                 this[ConsumerConfig.FETCH_MAX_BYTES_CONFIG] = 50 * 1024 * 1024
-                                this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerBuilder.Offset.LATEST.value
+                                this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerConfig.Offset.LATEST.value
                             }
                         }
-                        .build<Long, String>(
+                        .applyConfig<Long, String>(
                                 servers,
                                 groupId,
                                 clientId,
@@ -73,16 +72,16 @@ class KafkaTest {
 
         // init consumer with another group
         anotherConsumer =
-            KafkaConsumerBuilder()
+            KafkaConsumerConfig()
                 .applyReadOpt()
-                .applyIsolation(KafkaConsumerBuilder.IsolationLevel.READ_COMMITTED)
+                .applyIsolation(KafkaConsumerConfig.IsolationLevel.READ_COMMITTED)
                 .apply {
                     with(props) {
                         this[ConsumerConfig.FETCH_MAX_BYTES_CONFIG] = 50 * 1024 * 1024
-                        this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerBuilder.Offset.LATEST.value
+                        this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerConfig.Offset.LATEST.value
                     }
                 }
-                .build<Long, String>(
+                .applyConfig<Long, String>(
                     servers,
                     anotherGroupId,
                     anotherClientId,

@@ -6,7 +6,7 @@ package com.icerockdev.sample
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.icerockdev.service.kafka.IKafkaConsumer
-import com.icerockdev.service.kafka.KafkaConsumerBuilder
+import com.icerockdev.service.kafka.consumer.KafkaConsumerConfig
 import com.icerockdev.service.kafka.KafkaConsumerExecutionPool
 import com.icerockdev.service.kafka.KafkaProducerBuilder
 import com.icerockdev.service.kafka.KafkaSender
@@ -15,7 +15,6 @@ import com.icerockdev.service.kafka.ObjectSerializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.LongSerializer
 import org.apache.kafka.common.serialization.StringDeserializer
 import java.net.InetAddress
@@ -87,16 +86,16 @@ class TestProducerService(servers: String, clientId: String, private val topic: 
 class TestKafkaConsumer(servers: String, groupId: String, clientId: String) : IKafkaConsumer {
 
     private val consumer =
-        KafkaConsumerBuilder()
+        KafkaConsumerConfig()
             .applyReadOpt()
-            .applyIsolation(KafkaConsumerBuilder.IsolationLevel.READ_COMMITTED)
+            .applyIsolation(KafkaConsumerConfig.IsolationLevel.READ_COMMITTED)
             .apply {
                 with(props) {
                     this[ConsumerConfig.FETCH_MAX_BYTES_CONFIG] = 50 * 1024 * 1024
-                    this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerBuilder.Offset.LATEST.value
+                    this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = KafkaConsumerConfig.Offset.LATEST.value
                 }
             }
-            .build<String, String>(
+            .applyConfig<String, String>(
                 servers,
                 groupId,
                 clientId,
